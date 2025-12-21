@@ -1,27 +1,23 @@
 package com.healthcare.repository;
 
 import com.healthcare.model.Person;
-import org.springframework.data.domain.*;
-import org.springframework.data.jpa.repository.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.*;
+import java.util.Optional;
 
-public interface PersonRepository extends JpaRepository<Person, Long> {
-  Optional<Person> findByEmail(String email);
-  boolean existsByEmail(String email);
-
-  // Pagination + sorting
-  Page<Person> findByFullNameContainingIgnoreCase(String name, Pageable pageable);
-
-  // Derived query through location hierarchy:
-  Page<Person> findByVillage_Cell_Sector_District_Province_Code(String code, Pageable pageable);
-  Page<Person> findByVillage_Cell_Sector_District_Province_NameIgnoreCase(String name, Pageable pageable);
-
-  // Custom query version (optional but good for midterm)
-  @Query("""
-    SELECT p FROM Person p
-    WHERE LOWER(p.village.cell.sector.district.province.name) = LOWER(:provinceName)
-  """)
-  Page<Person> usersInProvince(@Param("provinceName") String provinceName, Pageable pageable);
+public interface PersonRepository extends JpaRepository<Person, Long>, JpaSpecificationExecutor<Person> {
+    Optional<Person> findByEmail(String email);
+    
+    // Case-insensitive email lookup
+    @Query("SELECT p FROM Person p WHERE LOWER(p.email) = LOWER(:email)")
+    Optional<Person> findByEmailIgnoreCase(@Param("email") String email);
+    
+    boolean existsByEmail(String email);
+    long countByRoles_Name(String roleName);
+    Page<Person> findByRoles_Name(String roleName, Pageable pageable);
 }

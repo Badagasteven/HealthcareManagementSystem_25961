@@ -8,16 +8,16 @@ import java.util.*;
 @Table(name="cells")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class Cell {
-  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Column(nullable=false)
-  private String name;
+    @Column(nullable = false)
+    private String name;
 
-  @ManyToOne(optional=false)
-  @JoinColumn(name="sector_id")
-  private Sector sector;
+    @ManyToOne
+    @JoinColumn(name="sector_id")
+    private Sector sector;
 
-  @OneToMany(mappedBy = "cell", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Village> villages = new ArrayList<>();
+    @OneToMany(mappedBy = "cell")
+    private List<Village> villages = new ArrayList<>();
 }

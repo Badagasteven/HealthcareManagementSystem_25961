@@ -18,23 +18,30 @@ public class Person {
   private String email;
 
   @Column(nullable=false)
-  private String password; // later hash it
+  private String password;
 
   // Person -> Village (Location relationship)
   @ManyToOne
   @JoinColumn(name="village_id")
   private Village village;
+  
+  private String phone;
+  private Integer age;
+  private String gender;
+  private String insurance;
+  private String specialty;
+  private String hospitalId;
 
-  // One-to-One
-  @OneToOne(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
-  private PersonProfile profile;
 
   // Many-to-Many roles
-  @ManyToMany
+  @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
     name="person_roles",
     joinColumns = @JoinColumn(name="person_id"),
     inverseJoinColumns = @JoinColumn(name="role_id")
   )
   private Set<Role> roles = new HashSet<>();
+  
+  private boolean mfaEnabled = false;
+  private String mfaSecret;
 }

@@ -2,18 +2,16 @@ package com.healthcare.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.*;
 
 @Entity
-@Table(name="provinces")
+@Table(name="hospitals")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class Province {
+public class Hospital {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
     private String name;
-
-    @OneToMany(mappedBy = "province")
-    private List<District> districts = new ArrayList<>();
+    private String province;
+    private String district;
+    private String category;
 }
