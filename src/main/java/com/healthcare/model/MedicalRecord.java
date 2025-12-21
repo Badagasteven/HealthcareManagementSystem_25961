@@ -1,43 +1,23 @@
 package com.healthcare.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import java.time.LocalDate;
-import java.util.List;
+import lombok.*;
+import java.time.*;
 
 @Entity
-@Table(name = "medical_records")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name="medical_records")
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class MedicalRecord {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    // Many-to-One relationship with Patient
-    @ManyToOne
-    @JoinColumn(name = "patient_id", nullable = false)
-    private Patient patient;
-    
-    // Many-to-One relationship with Doctor
-    @ManyToOne
-    @JoinColumn(name = "doctor_id", nullable = false)
-    private Doctor doctor;
-    
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String diagnosis;
-    
-    @Column(nullable = false)
-    private LocalDate treatmentDate;
-    
-    @Column(columnDefinition = "TEXT")
-    private String notes;
-    
-    // One-to-Many relationship with Prescription
-    @OneToMany(mappedBy = "medicalRecord", cascade = CascadeType.ALL)
-    private List<Prescription> prescriptions;
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  @ManyToOne(optional=false)
+  @JoinColumn(name="patient_id")
+  private Person patient;
+
+  private LocalDate recordDate;
+  private String diagnosis;
+
+  @Column(length = 2000)
+  private String notes;
 }

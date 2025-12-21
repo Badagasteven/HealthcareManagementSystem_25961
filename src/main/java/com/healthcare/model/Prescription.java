@@ -1,38 +1,26 @@
 package com.healthcare.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import java.time.*;
 
 @Entity
-@Table(name = "prescriptions")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name="prescriptions")
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class Prescription {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    // Many-to-One relationship with MedicalRecord
-    @ManyToOne
-    @JoinColumn(name = "medical_record_id", nullable = false)
-    private MedicalRecord medicalRecord;
-    
-    @Column(nullable = false)
-    private String medicationName;
-    
-    @Column(nullable = false)
-    private String dosage;
-    
-    @Column(nullable = false)
-    private String frequency;
-    
-    @Column(nullable = false)
-    private String duration;
-    
-    @Column(columnDefinition = "TEXT")
-    private String instructions;
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  @ManyToOne(optional=false)
+  @JoinColumn(name="patient_id")
+  private Person patient;
+
+  @ManyToOne(optional=false)
+  @JoinColumn(name="doctor_id")
+  private Person doctor;
+
+  private LocalDate issueDate;
+  private String medication;
+  private String dosage;
+  private String status; // active/dispensed/cancelled
 }

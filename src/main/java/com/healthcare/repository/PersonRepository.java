@@ -1,48 +1,27 @@
 package com.healthcare.repository;
 
 import com.healthcare.model.Person;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.repository.*;
+import org.springframework.data.repository.query.Param;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-@Repository
 public interface PersonRepository extends JpaRepository<Person, Long> {
-    
-    // REQUIRED: Find users by province code
-    List<Person> findByLocationProvinceCode(String provinceCode);
-    
-    // REQUIRED: Find users by province name
-    List<Person> findByLocationProvinceName(String provinceName);
-    
-    // Find by district
-    List<Person> findByLocationDistrictName(String districtName);
-    
-    // Find by role
-    List<Person> findByRole(Person.Role role);
-    
-    // existsBy queries
-    boolean existsByEmail(String email);
-    boolean existsByNationalId(String nationalId);
-    boolean existsByPhone(String phone);
-    
-    // findBy queries
-    Optional<Person> findByEmail(String email);
-    Optional<Person> findByNationalId(String nationalId);
-    
-    // Search by name
-    List<Person> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
-        String firstName, String lastName
-    );
-    
-    // Sorting queries
-    List<Person> findAllByOrderByFirstNameAsc();
-    List<Person> findByRoleOrderByLastNameAsc(Person.Role role);
-    
-    // Pagination support
-    Page<Person> findByRole(Person.Role role, Pageable pageable);
-    Page<Person> findByLocationProvinceName(String provinceName, Pageable pageable);
+  Optional<Person> findByEmail(String email);
+  boolean existsByEmail(String email);
+
+  // Pagination + sorting
+  Page<Person> findByFullNameContainingIgnoreCase(String name, Pageable pageable);
+
+  // Derived query through location hierarchy:
+  Page<Person> findByVillage_Cell_Sector_District_Province_Code(String code, Pageable pageable);
+  Page<Person> findByVillage_Cell_Sector_District_Province_NameIgnoreCase(String name, Pageable pageable);
+
+  // Custom query version (optional but good for midterm)
+  @Query("""
+    SELECT p FROM Person p
+    WHERE LOWER(p.village.cell.sector.district.province.name) = LOWER(:provinceName)
+  """)
+  Page<Person> usersInProvince(@Param("provinceName") String provinceName, Pageable pageable);
 }

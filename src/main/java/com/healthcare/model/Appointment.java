@@ -1,50 +1,26 @@
 package com.healthcare.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import lombok.*;
+import java.time.*;
 
 @Entity
-@Table(name = "appointments")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name="appointments")
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class Appointment {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    // Many-to-One relationship with Patient
-    @ManyToOne
-    @JoinColumn(name = "patient_id", nullable = false)
-    private Patient patient;
-    
-    // Many-to-One relationship with Doctor
-    @ManyToOne
-    @JoinColumn(name = "doctor_id", nullable = false)
-    private Doctor doctor;
-    
-    @Column(nullable = false)
-    private LocalDate appointmentDate;
-    
-    @Column(nullable = false)
-    private LocalTime appointmentTime;
-    
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private AppointmentStatus status;
-    
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String reason;
-    
-    @Column(columnDefinition = "TEXT")
-    private String notes;
-    
-    public enum AppointmentStatus {
-        SCHEDULED, COMPLETED, CANCELLED, RESCHEDULED, NO_SHOW
-    }
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  @ManyToOne(optional=false)
+  @JoinColumn(name="patient_id")
+  private Person patient;
+
+  @ManyToOne(optional=false)
+  @JoinColumn(name="doctor_id")
+  private Person doctor;
+
+  private LocalDate date;
+  private LocalTime time;
+
+  private String status; // pending/confirmed/cancelled
 }
