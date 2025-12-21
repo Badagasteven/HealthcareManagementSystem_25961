@@ -2,68 +2,47 @@ package com.healthcare.controller;
 
 import com.healthcare.model.Person;
 import com.healthcare.service.PersonService;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/persons")
-@CrossOrigin(origins="http://localhost:5173")
 public class PersonController {
-  private final PersonService service;
 
-  public PersonController(PersonService service) {
-    this.service = service;
-  }
+    private final PersonService personService;
 
-  // CRUD
-  @PostMapping
-  public Person create(@RequestBody Person person) {
-    return service.create(person);
-  }
+    public PersonController(PersonService personService) {
+        this.personService = personService;
+    }
 
-  @GetMapping
-  public Page<Person> list(
-      @RequestParam(defaultValue="0") int page,
-      @RequestParam(defaultValue="10") int size,
-      @RequestParam(defaultValue="id") String sortBy,
-      @RequestParam(defaultValue="asc") String dir
-  ) {
-    Sort sort = dir.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
-    Pageable pageable = PageRequest.of(page, size, sort);
-    return service.list(pageable);
-  }
+    @GetMapping
+    public Page<Person> getAllPersons(Pageable pageable) {
+        return personService.list(pageable);
+    }
 
-  @GetMapping("/{id}")
-  public Person get(@PathVariable Long id) {
-    return service.get(id);
-  }
+    @GetMapping("/role/{roleName}")
+    public Page<Person> getAllPersonsByRole(@PathVariable String roleName, Pageable pageable) {
+        return personService.list(roleName, pageable);
+    }
 
-  @PutMapping("/{id}")
-  public Person update(@PathVariable Long id, @RequestBody Person person) {
-    return service.update(id, person);
-  }
+    @GetMapping("/{id}")
+    public Person getPersonById(@PathVariable Long id) {
+        return personService.get(id);
+    }
 
-  @DeleteMapping("/{id}")
-  public void delete(@PathVariable Long id) {
-    service.delete(id);
-  }
+    @PostMapping
+    public Person createPerson(@RequestBody Person person) {
+        return personService.create(person);
+    }
 
-  // ✅ Required: retrieve users by province code OR province name
-  @GetMapping("/by-province")
-  public Page<Person> byProvince(
-      @RequestParam(required=false) String code,
-      @RequestParam(required=false) String name,
-      @RequestParam(defaultValue="0") int page,
-      @RequestParam(defaultValue="10") int size,
-      @RequestParam(defaultValue="id") String sortBy,
-      @RequestParam(defaultValue="asc") String dir
-  ) {
-    Sort sort = dir.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
-    Pageable pageable = PageRequest.of(page, size, sort);
+    @PutMapping("/{id}")
+    public Person updatePerson(@PathVariable Long id, @RequestBody Person person) {
+        return personService.update(id, person);
+    }
 
-    if (code != null && !code.isBlank()) return service.usersByProvinceCode(code, pageable);
-    if (name != null && !name.isBlank()) return service.usersByProvinceName(name, pageable);
-
-    throw new RuntimeException("Provide province code or name");
-  }
+    @DeleteMapping("/{id}")
+    public void deletePerson(@PathVariable Long id) {
+        personService.delete(id);
+    }
 }
